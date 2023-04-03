@@ -1,27 +1,28 @@
-SRCS=	code_review_test_node.cpp test_class.cpp
-FOLDER=	_bin/
-OBJS=	$(addprefix $(FOLDER),$(notdir $(SRCS:.cpp=.o)))
-NAME=	code_review
-CFLAGS=	-Wall -Werror -Wextra -std=c++20
+# -*- MakeFile -*-
 
-all:	$(NAME)
+SRC		=	test_class.cpp code_review_test_node.cpp 
+OBJ		=	$(addprefix _obj/,$(notdir $(SRC:.cpp=.o)))
+NAME	=	technical_challenge
+CFLAGS	=	-Wall -Werror -Wextra -std=c++17
 
-$(FOLDER):
-	mkdir $(FOLDER)
+all:		$(NAME)
 
-$(FOLDER)/$.o:	%.cpp | $(FOLDER)
+_obj:
+	mkdir _obj
+
+_obj/%.o:	%.cpp | _obj
 	c++ $(CFLAGS) -MMD -MP -c $< -o $@
 
-$(NAME):	$(OBJS)
+$(NAME):	$(OBJ)
 	c++ $(CFLAGS) -MMD -MP $^ -o $@
 
-fclean:	clean
-	rm $(NAME)
+fclean:		clean
+	rm -rf $(NAME)
 
 clean:
-	rm -rf $(FOLDER)
+	rm -rf _obj
 
-re:		fclean all
+re:			fclean all
 
-.PHONY:	all clean fclean re
--include $(OBJS:o-.d)
+.PHONY: all clean fclean re
+-include $(OBJ:.o=.d)

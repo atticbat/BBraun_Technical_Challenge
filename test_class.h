@@ -1,11 +1,17 @@
-#include <functional>
-#include "memory"
+#ifndef TEST_CLASS_H
+# define TEST_CLASS_H
+//protected the header file against any other potential header files named test_class.h, relevant only in bigger projects
+# include <functional>
+//memory is not a local header file, it is stored in the global include directories
+# include <memory>
+// *yet to see if any of these headers are actually required
 
 class TestClass {
 
 public:
     TestClass();
-    ~TestClass();
+    //in polymorphic classes the destructor has to be virtual, so to destroy the parent and child upon delete
+    virtual ~TestClass();
 
     double CallCallbackFunction(double first, double second);
     void doSomethingElse(unsigned int first);
@@ -25,6 +31,9 @@ public:
 };
 
 class DerivedTestClass : public TestClass{
+//public added to make constructor accessible
+public:
 	DerivedTestClass();
 	virtual std::string to_string();
-}
+};
+#endif

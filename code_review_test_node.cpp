@@ -1,6 +1,8 @@
 #include <iostream>
 #include "test_class.h"
 #include <memory>
+//<string> needed to define a string type
+#include <string>
 
 std::string filename="testfile.txt";
 
@@ -14,17 +16,22 @@ void describe(TestClass t){
 
 int main(int argc, char **argv)
 {
+  //argc and argv likely useless, for now just voided
+  (void) argc;
+  (void) argv;
   std::unique_ptr<TestClass> testClass = std::make_unique<TestClass>();
 
   std::shared_ptr<TestClass> secondClass = testClass->GetSecondClass();
   
   DerivedTestClass derivedClass;
   
-  const auto thirdClass = testClass->GetThirdClass();
+  // const auto thirdClass = testClass->GetThirdClass();
 
-  thirdClass->SetLocalVariable(5);
+  //can't set a value in a constant variable
+  // thirdClass->SetLocalVariable(5);
 
-  int result;
+  //result was not initialised, meaning that its value could be anything left over from previous memory allocations
+  int result = 0;
 
   testClass->writeToFile(filename,result);
 

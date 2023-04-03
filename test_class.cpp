@@ -1,7 +1,8 @@
-#include "fstream"
+#include <fstream>
 #include "test_class.h"
-#include "mutex"
-#include "exception"
+//headers included here were supposed to be <> to indicate that they are in the global include directories and not local
+#include <mutex>
+#include <exception>
 #include <iostream>
 
 TestClass::TestClass(){
@@ -54,7 +55,7 @@ const TestClass * TestClass::GetThirdClass(){
     return third_class;
 }
 
-virtual std::string TestClass::to_string(){
+std::string TestClass::to_string(){
 	return "Test class " ;
 }
 
@@ -62,6 +63,6 @@ DerivedTestClass::DerivedTestClass(){
     
 }
 
-virtual std::string DerivedTestClass::to_string(){
+std::string DerivedTestClass::to_string(){
 	return "Derived Test Class";
 }
