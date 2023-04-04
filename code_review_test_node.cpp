@@ -1,13 +1,18 @@
 #include <iostream>
-#include "test_class.h"
+#include "PointerFactory.hpp"
+#include "DerivedTestClass.hpp"
 #include <memory>
 //<string> needed to define a string type
 #include <string>
 
-std::string filename="testfile.txt";
+//malpractice to have global variables like this
 
-double callback(double first, float second){
+double  calculateDivision(double first, double second){
   return first/second;
+}
+
+double  calculateSum(double first, double second) {
+  return first+second;
 }
 
 //in order to use a child class in this context the parameter must become a base class pointer
@@ -15,68 +20,51 @@ void describe(TestClass *t){
 	std::cout<< t->to_string() << std::endl;
 }
 
-int main(int argc, char **argv)
-{
-  //argc and argv likely useless, for now just voided
-  (void) argc;
-  (void) argv;
+int test() {
   try
   {
-    //segv on first line
-    std::unique_ptr<TestClass> testClass;
-    testClass = std::make_unique<TestClass>();
-    std::shared_ptr<TestClass> secondClass = testClass->GetSecondClass();
-    int result = 0;
-
+    PointerFactory  factory;
+    std::string filename = "testfile.txt";
+    std::unique_ptr<TestClass> testClass = factory.generateFirstClass(baseClass); //makes sense to just use a unique pointer instead of a regular pointer
+    std::shared_ptr<TestClass> secondClass = factory.generateSecondClass(baseClass); //class returning instance of shared pointer is questionable
+    int result = 0; //result was not initialised, so it was just equal to whatever data was allocated before
+    testClass->writeToFile(filename,result); 
+    testClass->setCallbackFunction(calculateDivision);
+    result = testClass->callCallbackFunction(2.0,1.0);
     testClass->writeToFile(filename,result);
-
-    //callback function not set
-    testClass->setCallbackFunction(callback);
-    result = testClass->CallCallbackFunction(2.0,1.0);
-
-    testClass->writeToFile(filename,result);
-  std::cout << "works" << std::endl;
-
-    testClass->setCallbackFunction(callback);
-
-    result = testClass->CallCallbackFunction(3.0,1.0);
-
+    testClass->setCallbackFunction(calculateSum);
+    result = testClass->callCallbackFunction(3.0,1.0);
     testClass->writeToFile(filename, result);
-  }
-  catch(const std::exception& e)
-  {
-    std::cerr << e.what() << '\n';
+    // DerivedTestClass derivedClass;
+    TestClass  *derivedClass = factory.generateThirdClass(childClass); //DerivedTestClass will attempt to be used in describe, which should take a TestClass pointer to facilitate polymorphism
+    try {
+      describe(derivedClass);
+    } catch(const std::exception& e) {
+      std::cerr << e.what() << std::endl;
+    }
+    delete derivedClass;
+    try {
+      testClass->checkInputValidity(-1);
+    } catch ( std::invalid_argument ex){
+      std::cout  << ex.what() << std::endl;
+    } catch (...){
+      std::cout << "error occured" << std::endl;
+    }
+
+  auto thirdClass = factory.generateThirdClass(childClass);
+  thirdClass->setLocalVariable(5);
+  delete thirdClass;
+  } catch(const std::exception& e) {
+    std::cerr << e.what() << std::endl;
   }
   
-  //DerivedTestClass will attempt to be used in describe, which should take a TestClass pointer to facilitate polymorphism
-  // DerivedTestClass derivedClass;
-  TestClass *derivedClass = new DerivedTestClass();
-  
-  // const auto thirdClass = testClass->GetThirdClass();
+  return (0);
+}
 
-  //can't set a value in a constant variable
-  // thirdClass->SetLocalVariable(5);
-
-  //result was not initialised, meaning that its value could be anything left over from previous memory allocations
-
-  
-  try
-  {
-    describe(derivedClass);
-  }
-  catch(const std::exception& e)
-  {
-    std::cerr << e.what() << '\n';
-  }
-  delete derivedClass;
-//  try {
-//    testClass->doSomethingElse(-1);
-//  } catch ( std::invalid_argument ex){
-//    std::cout  << ex.what();
-//  } catch (...){
-//    std::cout << "error occured";
-//  }
-
-  return 0;
+int main() //char **argv is atypical I think, so I changed it to something more common
+{
+  int ret = test();
+  system("leaks technical_challenge");
+  return ret;
 }
 

@@ -1,6 +1,6 @@
 # -*- MakeFile -*-
 
-SRC		=	test_class.cpp code_review_test_node.cpp 
+SRC		=	TestClass.cpp DerivedTestClass.cpp code_review_test_node.cpp PointerFactory.cpp 
 OBJ		=	$(addprefix _obj/,$(notdir $(SRC:.cpp=.o)))
 NAME	=	technical_challenge
 CFLAGS	=	-Wall -Werror -Wextra -std=c++17
@@ -20,6 +20,7 @@ fclean:		clean
 	rm -rf $(NAME)
 
 clean:
+	rm testfile.txt
 	rm -rf _obj
 
 re:			fclean all
