@@ -26,7 +26,9 @@ int test() {
     PointerFactory  factory;
     std::string filename = "testfile.txt";
     std::unique_ptr<TestClass> testClass = factory.generateFirstClass(baseClass); //makes sense to just use a unique pointer instead of a regular pointer
-    std::shared_ptr<TestClass> secondClass = factory.generateSecondClass(baseClass); //class returning instance of shared pointer is questionable
+    std::shared_ptr<TestClass> secondClass = factory.generateSecondClass(childClass); //class returning instance of shared pointer is questionable
+    secondClass->setCallbackFunction(calculateSum);
+    std::cout << secondClass->callCallbackFunction(21.0, 21.0) << std::endl;
     int result = 0; //result was not initialised, so it was just equal to whatever data was allocated before
     testClass->writeToFile(filename,result); 
     testClass->setCallbackFunction(calculateDivision);
@@ -50,21 +52,19 @@ int test() {
     } catch (...){
       std::cout << "error occured" << std::endl;
     }
-
   auto thirdClass = factory.generateThirdClass(childClass);
   thirdClass->setLocalVariable(5);
   delete thirdClass;
   } catch(const std::exception& e) {
     std::cerr << e.what() << std::endl;
   }
-  
   return (0);
 }
 
 int main() //char **argv is atypical I think, so I changed it to something more common
 {
   int ret = test();
-  system("leaks technical_challenge");
+  // system("leaks technical_challenge");
   return ret;
 }
 
