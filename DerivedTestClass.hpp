@@ -1,17 +1,16 @@
 #ifndef DERIVEDTESTCLASS_HPP
-# define DERIVEDTESTCLASS_HPP
+#define DERIVEDTESTCLASS_HPP
 
-# include "TestClass.hpp"
+#include "TestClass.hpp"
 
-class DerivedTestClass : public TestClass{
-//public added to make constructor accessible
+class DerivedTestClass : public TestClass {
+  // public added to make constructor accessible
 public:
-	DerivedTestClass();
-	~DerivedTestClass();
-    DerivedTestClass(const DerivedTestClass &copy);
-    DerivedTestClass    &operator = (const DerivedTestClass &copy);
-	std::string toString();
+  DerivedTestClass();
+  ~DerivedTestClass();
+  DerivedTestClass(const DerivedTestClass &copy);
+  DerivedTestClass &operator=(const DerivedTestClass &copy);
+  std::string toString();
 };
-
 
 #endif
