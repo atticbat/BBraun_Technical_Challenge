@@ -20,7 +20,7 @@ fclean:		clean
 	rm -rf $(NAME)
 
 clean:
-	rm testfile.txt
+	rm -rf testfile.txt
 	rm -rf _obj
 
 re:			fclean all
