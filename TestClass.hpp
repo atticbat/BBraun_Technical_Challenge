@@ -2,9 +2,8 @@
 #define TESTCLASS_HPP
 
 #include <functional>
-#include <memory>
 
-class TestClass {
+template <typename T> class TestClass {
 
 public:
   TestClass();
@@ -13,24 +12,27 @@ public:
   // in polymorphic classes the destructor has to be virtual, so to destroy the
   // parent and child upon delete
   virtual ~TestClass();
-  double callCallbackFunction(double first, double second);
-  void checkInputValidity(int first);
+  double callCallbackFunction(T first, T second);
+  void checkInputValidity(int first); // questionable implementation
   void writeToFile(std::string filename, double value_to_write);
-  void setCallbackFunction(std::function<double(double, double)> callback);
-  std::function<double(double, double)> getCallbackFunction() const;
-  void setLocalVariable(int local_var);
-  int getLocalVariable() const;
+  void setCallbackFunction(std::function<T(T, T)> callback);
+  std::function<T(T, T)> getCallbackFunction() const;
+  // void setLocalVariable(int local_var);
+  // int getLocalVariable() const;
   virtual std::string to_string();
 
 private:
-  std::function<double(double, double)> _callback_function;
-  int _local_variable;
+  std::function<T(T, T)> _callback_function;
+  // int _local_variable;
   struct MissingFunctionException;
 };
 
-struct TestClass::MissingFunctionException : public std::exception {
+template <typename T>
+struct TestClass<T>::MissingFunctionException : public std::exception {
 public:
   const char *what() const throw();
 };
+
+#include "TestClass.tpp"
 
 #endif

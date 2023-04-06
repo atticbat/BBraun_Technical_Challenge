@@ -3,7 +3,7 @@
 
 #include "TestClass.hpp"
 
-class DerivedTestClass : public TestClass {
+template <typename T> class DerivedTestClass : public TestClass<T> {
   // public added to make constructor accessible
 public:
   DerivedTestClass();
@@ -12,5 +12,7 @@ public:
   DerivedTestClass &operator=(const DerivedTestClass &copy);
   std::string toString();
 };
+
+#include "DerivedTestClass.tpp"
 
 #endif

@@ -1,11 +1,42 @@
 #include "DerivedTestClass.hpp"
-#include "PointerFactory.hpp"
 #include <iostream>
 #include <memory>
-//<string> needed to define a string type
 #include <string>
 
-// malpractice to have global variables like this
+enum ClassType { baseClass, childClass };
+
+template <typename T>
+std::unique_ptr<TestClass<T>> generateFirstClass(ClassType type) {
+  switch (type) {
+  case baseClass:
+    return (std::unique_ptr<TestClass<T>>(new TestClass<T>()));
+  case childClass:
+    return (std::unique_ptr<DerivedTestClass<T>>(new DerivedTestClass<T>()));
+  default:
+    return NULL;
+  }
+}
+template <typename T>
+std::shared_ptr<TestClass<T>> generateSecondClass(ClassType type) {
+  switch (type) {
+  case baseClass:
+    return (std::shared_ptr<TestClass<T>>(new TestClass<T>()));
+  case childClass:
+    return (std::shared_ptr<DerivedTestClass<T>>(new DerivedTestClass<T>()));
+  default:
+    return NULL;
+  }
+}
+template <typename T> TestClass<T> *generateThirdClass(ClassType type) {
+  switch (type) {
+  case baseClass:
+    return (new TestClass<T>());
+  case childClass:
+    return (new DerivedTestClass<T>());
+  default:
+    return NULL;
+  }
+}
 
 double calculateDivision(double first, double second) { return first / second; }
 
@@ -13,16 +44,18 @@ double calculateSum(double first, double second) { return first + second; }
 
 // in order to use a child class in this context the parameter must become a
 // base class pointer
-void describe(TestClass *t) { std::cout << t->to_string() << std::endl; }
+template <typename T> void describe(TestClass<T> *t) {
+  std::cout << t->to_string() << std::endl;
+}
 
 int test() {
   try {
-    PointerFactory factory;
+    // PointerFactory factory;
     std::string filename = "testfile.txt";
-    std::unique_ptr<TestClass> testClass = factory.generateFirstClass(
-        baseClass); // makes sense to just use a unique pointer instead of a
-                    // regular pointer
-    std::shared_ptr<TestClass> secondClass = factory.generateSecondClass(
+    std::unique_ptr<TestClass<double>> testClass = generateFirstClass<double>(
+        baseClass); // makes sense to just use a unique
+                    // pointer instead of a regular pointer
+    std::shared_ptr<TestClass<float>> secondClass = generateSecondClass<float>(
         childClass); // class returning instance of shared pointer is
                      // questionable
     secondClass->setCallbackFunction(calculateSum);
@@ -37,7 +70,7 @@ int test() {
     result = testClass->callCallbackFunction(3.0, 1.0);
     testClass->writeToFile(filename, result);
     // DerivedTestClass derivedClass;
-    TestClass *derivedClass = factory.generateThirdClass(
+    TestClass<int> *derivedClass = generateThirdClass<int>(
         childClass); // DerivedTestClass will attempt to be used in describe,
                      // which should take a TestClass pointer to facilitate
                      // polymorphism
@@ -54,8 +87,7 @@ int test() {
     } catch (...) {
       std::cout << "error occured" << std::endl;
     }
-    auto thirdClass = factory.generateThirdClass(childClass);
-    thirdClass->setLocalVariable(5);
+    auto thirdClass = generateThirdClass<double>(childClass);
     delete thirdClass;
   } catch (const std::exception &e) {
     std::cerr << e.what() << std::endl;

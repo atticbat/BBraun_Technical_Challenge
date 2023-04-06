@@ -1,6 +1,6 @@
 # -*- MakeFile -*-
 
-SRC		=	TestClass.cpp DerivedTestClass.cpp code_review_test_node.cpp PointerFactory.cpp 
+SRC		=	code_review_test_node.cpp
 OBJ		=	$(addprefix _obj/,$(notdir $(SRC:.cpp=.o)))
 NAME	=	technical_challenge
 CFLAGS	=	-Wall -Werror -Wextra -std=c++17
