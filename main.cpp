@@ -4,6 +4,8 @@
 #include <iostream>
 //<memory> taken from TestClass.hpp
 //<string> needed to define a string type
+#include <memory>
+#include <ostream>
 #include <string>
 
 // malpractice to have global variables like this
@@ -20,7 +22,16 @@ double calculateSum(double first, double second) {
 
 // in order to use a child class in this context the parameter must become a
 // base class pointer
-void describe(TestClass *t) { std::cout << t->toString() << std::endl; }
+void describe(TestClass *t) {
+  if (t == NULL) { // safety check; need to make sure the pointer points to an
+                   // instance of a class
+    std::cerr << "TestClass pointer is not pointing to an instance of "
+                 "TestClass or its child"
+              << std::endl;
+    return;
+  }
+  std::cout << t->toString() << std::endl;
+}
 
 int test() {
   PointerFactory
@@ -49,10 +60,11 @@ int test() {
   thirdClass->setLocalVariable(
       5); // naming convention is camelCase for function names, the function is
           // changed for the sake of consistency
-
-  int result = 0; // result was uninitialised at first, meaning that whatever
-                  // data was leftover in the memory from a former allocation
-                  // would be the value of the integer
+  double result =
+      0; // result was uninitialised at first, meaning that whatever
+         // data was leftover in the memory from a former allocation
+         // would be the value of the integer. Also, result should be a double
+         // because the return value of my callback functions is double
 
   std::string filename =
       "testfile.txt"; // variables such as these should not be set as globals,
@@ -106,7 +118,6 @@ int test() {
   }
 
   describe(derivedClass);
-
   try {
     testClass->checkInputValidity(
         -1); // checkInputValidity used to only accept unsigned integers, but if
@@ -119,12 +130,44 @@ int test() {
     std::cout << "error occured";
   }
 
+  std::cout << "Some custom tests:" << std::endl;
+  std::shared_ptr<TestClass> secondClassMember = secondClass;
+  secondClass->setCallbackFunction(calculateSum);
+  std::cout
+      << "Here I am testing whether a member of a shared pointer is in "
+         "fact pointing to the same object by assigning secondPointer with "
+         "callback function sum and using the callback function from its member"
+      << std::endl;
+  try {
+    result = secondClassMember->callCallbackFunction(0.5, 4.0);
+    std::cout << "result of 0.5 + 4.0: " << result << std::endl;
+  } catch (std::exception &ex) {
+    std::cerr << ex.what() << std::endl;
+  }
+
+  std::cout << "Next I test my copy constructors" << std::endl;
+  TestClass noAlloc(*testClass);
+  try {
+    result = noAlloc.callCallbackFunction(4.0, 15.0);
+    std::cout << "result of 4.0 / 15.0: " << result << std::endl;
+  } catch (std::exception &ex) {
+    std::cerr << ex.what() << std::endl;
+  }
+  std::cout << "Final test: copy assignment constructor on the heap, copying "
+               "an instance of the same type"
+            << std::endl;
+  TestClass *assignedPointer = new TestClass(*testClass);
+  describe(assignedPointer);
+  // to do:
+  delete assignedPointer;
+  delete thirdClass; // type three pointers I have to delete manually
+  delete derivedClass;
   return 0;
 }
 
 int main() // argv and argc were not being used so I removed them
 {
   int ret = test();
-  // system("leaks technical_challenge");
+  // system("leaks technical_challenge"); //checking for leaks on the mac
   return ret;
 }
