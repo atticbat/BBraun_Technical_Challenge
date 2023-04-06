@@ -6,8 +6,14 @@
 #include <iostream>
 #include <mutex>
 
-TestClass::TestClass() : _callback_function(NULL), _local_variable(0) {}
-TestClass::TestClass(const TestClass &copy) { *this = copy; }
+TestClass::TestClass()
+    : _callback_function(NULL), _local_variable(0) {
+} // it's important that the _callback_function is initialised to NULL, so that
+  // I can compare it to NULL when I check for whether there is already a
+  // callback function stored
+TestClass::TestClass(const TestClass &copy) {
+  *this = copy;
+} // the copy constructor simply calls the copy assignment constructor
 TestClass &TestClass::operator=(const TestClass &copy) {
   if (this != &copy) {
     setCallbackFunction(copy.getCallbackFunction());
@@ -19,7 +25,6 @@ TestClass::~TestClass() {}
 double TestClass::callCallbackFunction(double first, double second) {
   if (!_callback_function)
     throw MissingFunctionException();
-  checkInputValidity(first);
   return _callback_function(first, second);
 }
 // value being passed here from main is a negative number, so I've changed the
@@ -34,7 +39,9 @@ void TestClass::checkInputValidity(int first) {
 }
 void TestClass::writeToFile(std::string filename, double value_to_write) {
   // there won't be any data races with one thread
-  std::ofstream file(filename, std::ios::app); // writeToFile now appends
+  std::ofstream file(filename,
+                     std::ios::app); // writeToFile now appends, the behaviour
+                                     // is more practical as a log file
   if (!file.is_open()) // in case the permissions to an already existing
                        // testfile.txt are disallowing editing
     throw std::runtime_error("Unable to open file");
@@ -52,7 +59,7 @@ std::function<double(double, double)> TestClass::getCallbackFunction() const {
 }
 void TestClass::setLocalVariable(int local_var) { _local_variable = local_var; }
 int TestClass::getLocalVariable() const { return _local_variable; }
-std::string TestClass::to_string() { return "Test class"; }
+const std::string TestClass::toString() const { return "Test class"; }
 const char *TestClass::MissingFunctionException::what() const throw() {
-  return ("Exception: Function missing");
+  return ("Exception: function missing");
 }
