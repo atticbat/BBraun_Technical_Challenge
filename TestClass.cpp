@@ -20,10 +20,8 @@ TestClass &TestClass::operator=(const TestClass &copy) {
 }
 TestClass::~TestClass() {}
 void TestClass::writeToFile(std::string filename, double value_to_write) {
-  // there won't be any data races with one thread
-  std::ofstream file(filename, std::ios::app); // writeToFile now appends
-  if (!file.is_open()) // in case the permissions to an already existing
-                       // testfile.txt are disallowing editing
+  std::ofstream file(filename, std::ios::app);
+  if (!file.is_open())
     throw std::runtime_error("Unable to open file");
   file << value_to_write << std::endl;
   file.close();
@@ -47,27 +45,21 @@ int TestClass::utiliseCallbackFunction(std::string key, int first, int second) {
   auto it = _callback_functions.find(key);
   if (it == _callback_functions.end())
     throw MissingFunctionException();
-  return it->second.getFunct()._int.callCallbackFunction(first, second);
+  return it->second.getFunct(INT)._int.callCallbackFunction(first, second);
 }
 float TestClass::utiliseCallbackFunction(std::string key, float first,
                                          float second) {
   auto it = _callback_functions.find(key);
   if (it == _callback_functions.end())
     throw MissingFunctionException();
-  return it->second.getFunct()._float.callCallbackFunction(first, second);
+  return it->second.getFunct(FLOAT)._float.callCallbackFunction(first, second);
 }
 double TestClass::utiliseCallbackFunction(std::string key, double first,
                                           double second) {
   auto it = _callback_functions.find(key);
   if (it == _callback_functions.end())
     throw MissingFunctionException();
-  return it->second.getFunct()._double.callCallbackFunction(first, second);
+  return it->second.getFunct(DOUBLE)._double.callCallbackFunction(first,
+                                                                  second);
 }
-
-// void TestClass::setLocalVariable(int local_var) { _local_variable =
-// local_var; } int TestClass::getLocalVariable() const { return
-// _local_variable; }
 std::string TestClass::to_string() { return "Test class"; }
-const char *TestClass::MissingFunctionException::what() const throw() {
-  return ("Exception: Function missing");
-}

@@ -8,8 +8,8 @@ public:
   CallbackFunction<T>(T (*callback)(T, T));
   CallbackFunction<T>(const CallbackFunction<T> &copy);
   CallbackFunction<T> &operator=(const CallbackFunction<T> &copy);
-  typedef T (*ptr)(T, T);
   T callCallbackFunction(T first, T second);
+  typedef T (*ptr)(T, T);
   ptr getCallbackFunction() const { return _callback_function; };
 
 private:
@@ -17,5 +17,4 @@ private:
 };
 
 #include "CallbackFunction.tpp"
-
 #endif

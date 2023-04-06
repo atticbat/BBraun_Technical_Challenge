@@ -1,7 +1,11 @@
 #ifndef TESTCLASS_HPP
 #define TESTCLASS_HPP
 
+#include "Exceptions.hpp"
+#define RED "\033[31m"
+#define NOCOLOUR "\033[0m"
 #include "CallbackFunction.hpp"
+
 #include <functional>
 #include <map>
 #include <string>
@@ -35,10 +39,14 @@ public:
     _type = type;
   }
   passedFunction(const passedFunction &copy) {
-    _funct = copy.getFunct();
     _type = copy.getType();
+    _funct = copy.getFunct(_type);
   }
-  validFunction getFunct() const { return _funct; }
+  validFunction getFunct(validTypes type) const {
+    if (_type != type)
+      throw MissingFunctionException();
+    return _funct;
+  }
   validTypes getType() const { return _type; }
 
 private:
@@ -64,12 +72,6 @@ public:
 
 private:
   std::map<std::string, passedFunction> _callback_functions;
-  struct MissingFunctionException;
-};
-
-struct TestClass::MissingFunctionException : public std::exception {
-public:
-  const char *what() const throw();
 };
 
 #endif

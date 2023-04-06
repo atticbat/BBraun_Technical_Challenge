@@ -1,7 +1,7 @@
 #ifndef CALLBACKFUNCTION_TPP
 #define CALLBACKFUNCTION_TPP
 
-#include <exception>
+#include "Exceptions.hpp"
 template <typename T>
 CallbackFunction<T>::CallbackFunction() : _callback_function(NULL) {}
 
@@ -26,7 +26,7 @@ CallbackFunction<T>::operator=(const CallbackFunction<T> &copy) {
 template <typename T>
 T CallbackFunction<T>::callCallbackFunction(T first, T second) {
   if (!_callback_function)
-    throw std::exception();
+    throw MissingFunctionException();
   return _callback_function(first, second);
 }
 
