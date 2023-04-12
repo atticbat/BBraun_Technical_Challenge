@@ -6,7 +6,7 @@ const std::string DerivedTestClass::toString() const {
   return "Derived Test Class";
 }
 DerivedTestClass::~DerivedTestClass() {}
-DerivedTestClass::DerivedTestClass(const DerivedTestClass &copy) {
+DerivedTestClass::DerivedTestClass(const DerivedTestClass &copy) : TestClass() {
   *this = copy;
 }
 DerivedTestClass &DerivedTestClass::operator=(const DerivedTestClass &copy) {

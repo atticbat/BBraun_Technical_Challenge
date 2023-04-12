@@ -124,7 +124,7 @@ int test() {
              // you pass a negative number into this then the data will overflow
              // and the number would become UINT_MAX, to get the correct throw
              // error I changed the parameter to take integers
-  } catch (std::invalid_argument ex) {
+  } catch (std::invalid_argument &ex) {
     std::cout << ex.what();
   } catch (...) {
     std::cout << "error occured";
